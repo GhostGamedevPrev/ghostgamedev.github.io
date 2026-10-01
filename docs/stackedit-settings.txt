@@ -1,0 +1,9 @@
+
+https://github.com/GhostGamedev/ghostgamedev.github.io
+posts
+main
+
+---
+
+colorTheme: dark
+autoSyncEvery: 99999999999
