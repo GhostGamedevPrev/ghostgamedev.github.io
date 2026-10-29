@@ -1,0 +1,100 @@
+﻿---
+title: "Hello World"
+permalink: "/hello-world/"
+summary: "Introducing the idea of dev itself as an adventure game. Starting my adventures with the development of this blog application."
+date: 2025-10-14
+---
+
+# Hello, World!
+
+Hi! Welcome to GhostGamedev! 👻🕹️🙂
+
+Here on GhostGamedev, I plan/want/hope/dream/etc to do,
+
+- 🕹️ Gamedev
+- ⌨️ Webdev
+- ✏️ Blogging (about gamedev & webdev)
+
+I believe that developing games/apps/software/etc is a game in itself - that software development has all of the elements of a game,
+
+- Fun = It's challenging (which is the heart of "funness")
+- Levels/progression = It changes the deeper you get into it
+- Win condition = Building the software (or the feature/system)
+
+Software development itself is like a massive adventure game. So, here on GhostGamedev, I'm going to treat software development like an adventure game!
+
+## Where I will start my adventures 🧙‍♂️
+
+To start my GhostGamedev adventures, I wanted to start with the "blogging" aspect. I just enjoy blogging, so yeah. It feels right.
+
+My goal with blogging is to talk about stuff as I do stuff - like findings, problems, solutions, cool stuff, etc.
+
+In fact, the very first thing to blog about is this blog itself!
+
+
+## Blog version 0 - GitHub Pages
+
+For simplicity, I decided to use a GitHub Pages static website (this current website) to start my blog. It's bare bones, but I actually find it quite nice because I'm just writing HTML code and it feels rather cozy 🙂. I think GitHub Pages has built-in support for some sort of static site generation, but I'm just writing straight up HTML at this time because, well, it's an easy way to get started!
+
+However, at some point in the future, I plan to create a server using a DigitalOcean Droplet and build/host a more traditional website - ie, a server that generates and serves HTML pages. But, more on that later... Because...
+
+I have exciting news! While building this basic blog website, I encountered my first ever GhostGamedev problem/bug! 👀
+
+### My first problem/bug!
+
+I finally learned about "margin collapsing" in frontend webdev for the first time in my life! I've been a web developer for quite a while, and admittedly, whenever I've encountered "strange and unusual spacing jankness", I've looked for quick fixes and spammed solutions without actually learning what is going on due to time constraints (the "just get it done" mentality) (oh, and, btw, it's not a good mentality - it's just what the corporate grind does to you and it's never good). But, here, with GhostGamedev, I'm taking my time 🙂. So, this time, I finally learned about what is actually going on! Particularly, the strange behavior of the html element and the body element when you have a P tag as the first element inside the body. It's due to a little something called "margin collapsing".
+
+If you don't know what I'm talking about, create a basic HTML page with a single P (paragraph) tag. It may look totally normal but go into dev tools and look at all of the strange and unusual spacing between the html (aka "root") element, the body element, and the paragraph element. The body element will be mysteriously translated downward, the contents of the body will extend outwards outside of the body (being the margins from its child P tag), and the html element will be the size of the children of the body (including the margins of the child P tag) whereas the body element will not (ie, it will be SMALLER than its own contents - like, how is that possible???). It makes it even more confusing that the body element has its own margins set by default as well.
+
+My personal rule of thumb that I've followed over the years has always been:
+
+Do this in CSS,
+
+```
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+```
+
+And, that gets rid of any/all potential default window margin/padding/etc across browsers. ✅
+
+And, just never (or very sparingly) use margins (ie, set/override all margins to 0) and use padding instead.
+
+But!
+
+Now I know that if an element has its own "block formatting context", then the margin of children elements stay within the containing element and doesn't get processed/handled/"collapsed" externally (to the parent element) via an odd mechanism  called "margin collapsing". 🙂. I'm sure it has its uses, but I've never practically utilized "margin collapsing" myself other than it just getting in the way, haha.
+
+Oh, also, for the record, I decided to use `display: flow-root;` to create a block formatting context. There are other ways to create/ensure block formatting contexts, but I thought this was the cleanest and simplest method. And, I'm not so worried about browser support if `display: flow-root;` is a particularly new browser specification (sorry legacy browser users!).
+
+So, my issue was that I was afraid of using margins as well as P tags (without overriding their default margins), but now I feel much better about using both of them! 🎉
+
+
+## Blog version 1 - DigitalOcean Droplet
+
+For the next version of the blog (which I plan to work on hopefully soon), I plan to build & host a website on a DigitalOcean Droplet. However, admittedly, there is one concern I have with DigitalOcean:
+
+Data transfer costs additional, unbounded money per GB on top of the base $4 per month (well, specifically, data sent (egress)) (data received (ingress) is free ✅).
+
+The reason I find this scary is in the event that a flood of malicious requests come to my server and run my bill up - ie, the "infinite bill" problem. After all, this is the public internet - you never know who/what is out there. And, the last thing I want/need is a massive, unpayable bill and then end up in a bad situation (I'm certainly not the world's most money-rich person) from a hobby project... No thanks...
+
+At first, I researched to see if NGINX could somehow be configured to purposely/intentionally slow down my website, but I came to find that it can only do so per-request and/or per-client/IP... Well, effectively, anyway... But, I want to slow down my entire server - not just per-IP...
+
+Then, while doing research, I discovered something called "tc" in Linux which stands for "traffic control". Tc allows you to configure how the operating system handles/schedules network requests/packets at the driver level. It's actually quite cool! You can set a maximum data transfer rate as well as select which algorithm you want the operating system to use for scheduling network requests/packets going out of the network card (NOTE: I think tc is only for scheduling the sending of packets - not the receiving of packets - not 100% sure about that, though).
+
+So, my plan is to create a Droplet and then somehow test out tc to see if I can indeed limit the data rate of my server. If I can, then I'd be able to compute an upper limit of bandwidth (and, therefore, a theoretical monthly price limit) by multiplying the data rate (bytes per second) by the amount of seconds per month (30 days * 24 hours * 60 minutes * 60 seconds = 2,592,000 seconds).
+
+A few side notes: 
+- I did look for VPS hosts that didn't charge for data transference, but all of the hosts I found generally seemed sketchy (stories including: history of asking for unnecessarily sensitive personal information, account terminations for no reason, wrongly sending people to debt collections, etc), and, still had unbounded data transference fees once you looked deep enough into them 🤦. So, I asked myself, what's the point of trying to use a cheaper host when it will probably just end up being a much more expensive headache in the future? Perhaps sometimes it's better to just use the things that are big and well-known... (which is a bummer because I always love using the "better thing" over the "popular thing") (but, in this case, I found no "better thing", so... 🤷)
+- I also intend to use Cloudflare in front of my server (some people say "Just use Cloudflare. Cloudflare will solve all of your problems."), but still, I want to know for certain that I'm safe. ✅
+
+
+## Well, that's all for now!
+
+I suppose that, naturally, I'd also like to do some actual gamedev as well (seeing that this is Ghost"Gamedev" and all 🤔). And, that will probably slow down my server setup work... So, I guess I'll be context switching between the two things because, well, I want both of those things, haha.
+
+Maybe I'll proofread this later... Or, maybe never... 😝
+
+Peace!
